@@ -17,6 +17,7 @@ const App = () => {
   const [param, setParam] = useState(null);
   const [region, setRegion] = useState();
   const [body, setBody] = useState();
+  const [selected, setSelected] = useState();
 
   // custom hook useAxios which makes requests based on props
   const { error, loading, response } = useAxios({
@@ -41,7 +42,7 @@ const App = () => {
     }
   }, [response]);
 
-  // used to console log the result
+  // used to console log the resultt
   useEffect(() => {
     let body = {
       regions: [
@@ -59,43 +60,45 @@ const App = () => {
     if (source === 'region') {
       setParam(value.value);
       setRegion(value.label);
+      setSelected([]);
     } else {
+      setSelected(value);
       value.forEach((element, i) => {
         fullObj.push(element.label);
       });
-      setLastObj(fullObj);
     }
+    setLastObj(fullObj);
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        {loading ? (
-          <p>loading...</p>
-        ) : (
-          <div>
-            {error && (
-              <div>
-                <p>{error.message}</p>
-              </div>
-            )}
-            <div className="flex-container flex-start">
-              <Select
-                options={regionData}
-                onChange={(val) => handleChange(val, 'region')}
-                styles={{ width: '100%' }}
-              />
+        <div>
+          {error && (
+            <div>
+              <p>{error.message}</p>
             </div>
-            <div className="flex-container flex-start">
-              <Select
-                options={cityData}
-                isMulti
-                onChange={(val) => handleChange(val, 'city')}
-                isDisabled={isNull(param)}
-              />
-            </div>
+          )}
+          <div className="flex-container flex-start">
+            <Select
+              options={regionData}
+              isLoading={loading}
+              onChange={(val) => handleChange(val, 'region')}
+              styles={{ width: '100%' }}
+            />
           </div>
-        )}
+          <div className="flex-container flex-start">
+            <Select
+              value={selected}
+              options={cityData}
+              isMulti
+              isLoading={loading}
+              onChange={(val) => handleChange(val, 'city')}
+              isDisabled={isNull(param)}
+            />
+          </div>
+        </div>
+
         <code>{JSON.stringify(body)}</code>
       </header>
     </div>
